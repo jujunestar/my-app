@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>김주하 | Portfolio</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#2563eb;
+      --accent-soft:#eff6ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, "Noto Sans KR", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.65;
+    }
+    a{color:var(--accent); text-decoration:none}
+    .wrap{max-width:980px; margin:0 auto; padding:0 24px}
+    header{
+      background:linear-gradient(135deg,#111827,#1f3b73);
+      color:white;
+      padding:72px 0 64px;
+    }
+    header h1{font-size:42px; margin:0 0 12px}
+    header p{font-size:20px; margin:0; max-width:760px}
+    .tag{
+      display:inline-block;
+      margin-top:22px;
+      padding:8px 12px;
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:999px;
+      font-size:14px;
+    }
+    main{padding:48px 0 72px}
+    section{margin-bottom:48px}
+    h2{font-size:28px; margin:0 0 20px}
+    .grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 6px 18px rgba(17,24,39,.05);
+    }
+    .card h3{margin:0 0 10px; font-size:20px}
+    .label{
+      font-size:12px;
+      font-weight:700;
+      color:var(--accent);
+      background:var(--accent-soft);
+      border-radius:999px;
+      padding:5px 9px;
+      display:inline-block;
+      margin-bottom:12px;
+    }
+    .three-lines p{margin:8px 0}
+    .three-lines strong{display:inline-block; min-width:72px}
+    .log{
+      margin-top:18px;
+      padding-top:14px;
+      border-top:1px dashed var(--line);
+      color:var(--muted);
+      font-size:14px;
+    }
+    .skills{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px}
+    .skills h3{font-size:16px; margin:0 0 10px}
+    .pill{
+      display:inline-block;
+      margin:4px 6px 4px 0;
+      padding:7px 10px;
+      background:#f3f4f6;
+      border-radius:10px;
+      font-size:14px;
+    }
+    .contact p{margin:6px 0}
+    footer{
+      text-align:center;
+      color:var(--muted);
+      padding:28px 0 40px;
+      font-size:14px;
+    }
+    @media(max-width:720px){
+      header{padding:52px 0 48px}
+      header h1{font-size:34px}
+      header p{font-size:18px}
+      .grid,.skills{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>김주하</h1>
+      <p>AI와 컴퓨터 시스템을 활용해 실제 문제를 해결하고 싶은 공학도</p>
+      <span class="tag">Portfolio · First Version</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>작품</h2>
+      <div class="grid">
+        <article class="card">
+          <span class="label">PROJECT 01</span>
+          <h3>Cortex-M4 기반 Closed-loop 전압 제어 시스템</h3>
+          <p>
+            PWM으로 생성한 출력 전압을 다시 측정하고,
+            ADC Feedback과 PI 제어를 이용해 목표 전압을 추종하도록 구현한
+            Mixed-Signal 제어 프로젝트입니다.
+          </p>
+          <p>
+            1ms 주기의 제어 루프에서 Vout이 Vref를 추종하도록 구성하며
+            PWM, ADC, OPAMP, PI 제어가 하나의 폐루프 시스템으로 동작하는 과정을 경험했습니다.
+          </p>
+          <div class="log"><strong>개발 로그</strong> · 2026-08-13 · AI와 함께 첫 버전 제작</div>
+        </article>
+
+        <article class="card">
+          <span class="label">PROJECT 02</span>
+          <h3>AI 자율주행 모빌리티 제작 및 실습</h3>
+          <p>
+            Raspberry Pi Pico 기반 모빌리티를 제어하며
+            PWM, ADC, Timer, Thread, 카메라·GUI, TensorFlow 기반 학습을 단계적으로 실습했습니다.
+          </p>
+          <p>
+            4일간 하드웨어 제어부터 AI 모델 활용까지 경험하고,
+            마지막에는 GPT API를 자율주행 코드와 연결했습니다.
+          </p>
+          <div class="log"><strong>개발 로그</strong> · 2026-08-13 · AI와 함께 첫 버전 제작</div>
+        </article>
+
+        <article class="card">
+          <span class="label">COMING SOON</span>
+          <h3>학원 숙제 관리 프로그램</h3>
+          <p>
+            학생마다 숙제 종류와 진도가 달라 선생님이 매일 완료 여부를 확인하고
+            학부모에게 전달하는 과정이 번거로운 문제를 해결하기 위한 프로그램입니다.
+          </p>
+          <p>
+            학생 이름을 선택하면 숙제 목록을 확인하고,
+            미완료 숙제를 체크해 전달 내용을 쉽게 정리할 수 있도록 설계할 예정입니다.
+          </p>
+          <div class="log"><strong>남길 기록</strong> · 실제 사용 중 발견한 불편, 기능 선택 이유, 수정 전후 과정</div>
+        </article>
+
+        <article class="card">
+          <span class="label">NOW</span>
+          <h3>지금 보고 있는 이 페이지</h3>
+          <p>
+            내 경험과 프로젝트를 한곳에 모아 보여주기 위해 만든 첫 포트폴리오 웹페이지입니다.
+          </p>
+          <p>
+            앞으로 프로젝트가 늘어날 때마다 결과와 과정을 추가해 계속 확장할 예정입니다.
+          </p>
+          <div class="log"><strong>개발 로그</strong> · 2026-08-13 · AI와 함께 첫 버전 제작</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>해 본 것</h2>
+      <div class="grid three-lines">
+        <div class="card">
+          <h3>Cortex-M4 Closed-loop 전압 제어</h3>
+          <p><strong>상황</strong> PWM 출력 전압을 목표 전압에 안정적으로 맞추는 시스템을 팀 프로젝트로 구현했습니다.</p>
+          <p><strong>한 것</strong> PWM, ADC Feedback, PI 제어를 활용한 폐루프 제어 시스템 구현에 참여했습니다.</p>
+          <p><strong>결과</strong> 1ms 주기의 제어 루프에서 Vout이 Vref를 추종하도록 구현하며 하드웨어와 제어 알고리즘의 연결을 이해했습니다.</p>
+        </div>
+
+        <div class="card">
+          <h3>AI 자율주행 모빌리티 실습</h3>
+          <p><strong>상황</strong> Raspberry Pi Pico 기반 자율주행 모빌리티 제작 및 실습교육에 참여했습니다.</p>
+          <p><strong>한 것</strong> PWM·ADC·Timer·Thread 기반 제어부터 카메라/GUI, TensorFlow 학습, GPT API 연동까지 실습했습니다.</p>
+          <p><strong>결과</strong> 4일간 하드웨어·소프트웨어·AI가 연결되는 전체 흐름을 경험했습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>다루는 도구</h2>
+      <div class="skills">
+        <div class="card">
+          <h3>쓸 수 있다</h3>
+          <span class="pill">Raspberry Pi Pico</span>
+        </div>
+        <div class="card">
+          <h3>써 봤다</h3>
+          <span class="pill">Python</span>
+          <span class="pill">C</span>
+          <span class="pill">STM32 / Cortex-M4</span>
+          <span class="pill">TensorFlow / Keras</span>
+          <span class="pill">OpenAI API</span>
+        </div>
+        <div class="card">
+          <h3>배우는 중</h3>
+          <span class="pill">Machine Learning</span>
+          <span class="pill">Git / GitHub</span>
+          <span class="pill">Embedded Systems</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact">
+      <h2>연락처</h2>
+      <div class="card">
+        <p><strong>Email</strong> · 아직 입력하지 않음</p>
+        <p><strong>GitHub</strong> · 다음 단계에서 연결 예정</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 김주하 · Portfolio
+  </footer>
+</body>
+</html>
