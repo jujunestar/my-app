@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>청년 지원 혜택</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#2563eb;
+      --accent-soft:#eff6ff;
+      --ok:#059669;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, "Noto Sans KR", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.65;
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:0 24px}
+    header{
+      background:linear-gradient(135deg,#111827,#1f3b73);
+      color:white;
+      padding:64px 0 56px;
+    }
+    header h1{font-size:38px; margin:0 0 12px}
+    header p{font-size:18px; margin:0; color:rgba(255,255,255,.85)}
+    main{padding:48px 0 72px}
+    section{margin-bottom:48px}
+    h2{font-size:26px; margin:0 0 20px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 6px 18px rgba(17,24,39,.05);
+    }
+    .card h3{margin:0 0 16px; font-size:20px}
+    .check{
+      font-size:12px;
+      font-weight:700;
+      color:var(--ok);
+      background:#ecfdf5;
+      border-radius:999px;
+      padding:4px 8px;
+      display:inline-block;
+      margin-bottom:4px;
+    }
+    table{width:100%; border-collapse:collapse; font-size:15px}
+    th,td{
+      border:1px solid var(--line);
+      padding:12px 14px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{background:var(--accent-soft); color:var(--accent); white-space:nowrap; font-size:14px}
+    .date{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .note{
+      margin-top:16px;
+      padding:12px 14px;
+      background:#fffbeb;
+      border:1px solid #fde68a;
+      border-radius:12px;
+      font-size:14px;
+    }
+    .note strong{color:#92400e}
+    footer{
+      text-align:center;
+      color:var(--muted);
+      padding:28px 0 40px;
+      font-size:14px;
+    }
+    @media(max-width:720px){
+      header{padding:48px 0 44px}
+      header h1{font-size:30px}
+      table{font-size:14px}
+      th,td{padding:10px 8px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>청년 지원 혜택</h1>
+      <p>조건과 금액을 표로 정리했습니다. 모든 정보는 확인일을 함께 표기합니다.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>청년월세지원 (국토부)</h2>
+      <div class="card">
+        <span class="check">지원금액</span>
+        <table>
+          <tr>
+            <th>구분</th>
+            <th>내용</th>
+          </tr>
+          <tr>
+            <th>금액</th>
+            <td>월 최대 20만원 × 최대 24개월 (총 480만원) <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+          <tr>
+            <th>나이 조건</th>
+            <td>만 19~34세 <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+          <tr>
+            <th>서울시 자체 사업</th>
+            <td>만 19~39세 (지자체 분기) <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+          <tr>
+            <th>기타 조건</th>
+            <td>무주택 + 보증금 5천만원 이하 + 월세 70만원 이하 <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+          <tr>
+            <th>비고</th>
+            <td>2026년 한시사업 → 상시사업 전환 <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>청년도약계좌</h2>
+      <div class="card">
+        <table>
+          <tr>
+            <th>구분</th>
+            <th>내용</th>
+          </tr>
+          <tr>
+            <th>나이 조건</th>
+            <td>만 19~34세 <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+          <tr>
+            <th>병역 기간 반영</th>
+            <td>병역 기간만큼 나이에서 빼 줌 — 병역 2년이면 만 36세도 가능 <span class="date">(확인일: 2026-08-13)</span></td>
+          </tr>
+        </table>
+        <div class="note">
+          <strong>나이 계산 규정:</strong> 나이를 계산할 때는 병역 기간을 빼 주는 규정을 반영합니다.
+          (예: 만 36세 + 병역 24개월 → 도약계좌 가입 가능, 36−2=34)
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    확인일: 2026-08-13 기준 · 정책 조건·금액은 data/청년정책.md에서만 가져옵니다.
+  </footer>
+</body>
+</html>
