@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청년 정책 진단</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+  .container { max-width: 480px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.5rem; text-align: center; margin-bottom: 8px; }
+  .subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+  input[type="number"], input[type="text"] {
+    width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 1rem; background: #fff;
+  }
+  input:focus { outline: none; border-color: #4a90d9; }
+  .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio-group label { font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .radio-group input[type="radio"] { margin: 0; }
+  .btn-check {
+    width: 100%; padding: 14px; background: #4a90d9; color: #fff; border: none;
+    border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 8px;
+  }
+  .btn-check:hover { background: #357abd; }
+  .btn-check:disabled { background: #ccc; cursor: not-allowed; }
+  .result { display: none; margin-top: 24px; }
+  .result.show { display: block; }
+  .summary-box {
+    background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;
+  }
+  .summary-box .amount { font-size: 1.8rem; font-weight: 700; color: #2d7a3a; }
+  .summary-box .label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+  .policy-card {
+    background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #ccc;
+  }
+  .policy-card.possible { border-left-color: #2d7a3a; }
+  .policy-card.impossible { border-left-color: #d94a4a; }
+  .policy-card.conditional { border-left-color: #d9a84a; }
+  .policy-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #fff;
+  }
+  .badge.possible { background: #2d7a3a; }
+  .badge.impossible { background: #d94a4a; }
+  .badge.conditional { background: #d9a84a; }
+  .policy-detail { font-size: 0.9rem; color: #555; margin-top: 8px; }
+  .policy-detail li { margin-bottom: 4px; list-style: none; padding-left: 1em; text-indent: -1em; }
+  .policy-detail li::before { content: "· "; color: #999; }
+  .notice { background: #fff8e1; border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 0.85rem; color: #7a6a00; }
+  .confirm-date { font-size: 0.75rem; color: #aaa; margin-top: 8px; }
+  .error-msg { color: #d94a4a; font-size: 0.85rem; margin-top: 4px; display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>청년 정책 진단</h1>
+  <p class="subtitle">내 조건으로 받을 수 있는 지원금 확인</p>
+
+  <form id="policyForm" novalidate>
+    <div class="form-group">
+      <label for="age">나이 (만 나이)</label>
+      <input type="number" id="age" min="14" max="100" placeholder="예: 27" required>
+      <div class="error-msg" id="ageError">나이를 입력해주세요.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="military">병역 기간 (개월)</label>
+      <input type="number" id="military" min="0" max="72" placeholder="없으면 0 또는 비워두세요">
+      <div class="confirm-date">병역 기간은 만 나이에서 차감됩니다 (최대 6년). 확인일: 2026-08-13</div>
+    </div>
+
+    <div class="form-group">
+      <label>주거 형태</label>
+      <div class="radio-group">
+        <label><input type="radio" name="housing" value="월세" required> 월세</label>
+        <label><input type="radio" name="housing" value="전세"> 전세</label>
+        <label><input type="radio" name="housing" value="자가"> 자가</label>
+        <label><input type="radio" name="housing" value="부모님집"> 부모님 집</label>
+      </div>
+      <div class="error-msg" id="housingError">주거 형태를 선택해주세요.</div>
+    </div>
+
+    <div class="form-group" id="rentGroup">
+      <label for="rent">월세 금액 (만 원)</label>
+      <input type="number" id="rent" min="0" placeholder="예: 50">
+      <div class="confirm-date">청년월세지원 기준: 월세 70만원 이하. 확인일: 2026-08-13</div>
+    </div>
+
+    <div class="form-group" id="depositGroup">
+      <label for="deposit">보증금 (만 원)</label>
+      <input type="number" id="deposit" min="0" placeholder="예: 500">
+      <div class="confirm-date">청년월세지원 기준: 보증금 5,000만원 이하. 확인일: 2026-08-13</div>
+    </div>
+
+    <div class="form-group">
+      <label>소득: <span id="incomeQuestion">월 ??만원 이하인가요?</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="income" value="yes"> 예</label>
+        <label><input type="radio" name="income" value="no"> 아니오</label>
+        <label><input type="radio" name="income" value="unknown"> 모르겠음</label>
+      </div>
+      <div class="confirm-date">확인일: 2026-08-13</div>
+    </div>
+
+    <button type="submit" class="btn-check">판정 받기</button>
+  </form>
+
+  <div class="result" id="result">
+    <div class="summary-box" id="summaryBox">
+      <div class="amount" id="totalAmount">-</div>
+      <div class="label">최대 받을 수 있는 금액</div>
+    </div>
+
+    <div id="policyCards"></div>
+
+    <div class="notice">
+      ※ 부모 소득은 별도 확인 필요합니다.<br>
+      ※ 내 지자체 사업은 따로 확인해주세요.
+    </div>
+    <div class="confirm-date">데이터 확인일: 2026-08-13 | 출처: data/청년정책.md</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const form = document.getElementById('policyForm');
+  const rentGroup = document.getElementById('rentGroup');
+  const depositGroup = document.getElementById('depositGroup');
+  const incomeQuestion = document.getElementById('incomeQuestion');
+
+  // 소득 질문 금액 설정 (월 기준)
+  const INCOME_THRESHOLD_MONTHLY = 170; // 만원
+
+  function updateIncomeQuestion() {
+    incomeQuestion.textContent = '월 ' + INCOME_THRESHOLD_MONTHLY + '만원 이하인가요?';
+  }
+  updateIncomeQuestion();
+
+  // 주거 형태 변경 시 월세/보증금 필드 표시/숨김
+  document.querySelectorAll('input[name="housing"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      if (this.value === '월세') {
+        rentGroup.style.display = 'block';
+        depositGroup.style.display = 'block';
+      } else {
+        rentGroup.style.display = 'none';
+        depositGroup.style.display = 'none';
+      }
+    });
+  });
+
+  // 판정 로직
+  function evaluate(age, military, housing, rent, deposit, income) {
+    var adjustedAge = age;
+    if (military > 0) {
+      var militaryYears = Math.min(military / 12, 6);
+      adjustedAge = age - militaryYears;
+    }
+
+    var results = [];
+
+    // === 청년월세지원 ===
+    var rentResult = { name: '청년월세지원 (국토부)', status: '', reasons: [], amount: 0 };
+
+    // 나이
+    if (adjustedAge < 19 || adjustedAge > 34) {
+      rentResult.status = '불가';
+      rentResult.reasons.push('나이 요건 미충족 (만 ' + adjustedAge + '세, 19~34세 필요)');
+    }
+
+    // 주거 형태
+    if (housing !== '월세') {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '불가';
+      }
+      rentResult.reasons.push('월세 거주자가 아닙니다 (현재: ' + housing + ')');
+    }
+
+    // 보증금
+    if (housing === '월세' && deposit > 5000) {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '불가';
+      }
+      rentResult.reasons.push('보증금 기준 초과 (' + deposit.toLocaleString() + '만원 > 5,000만원)');
+    }
+
+    // 월세
+    if (housing === '월세' && rent > 70) {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '불가';
+      }
+      rentResult.reasons.push('월세 기준 초과 (' + rent + '만원 > 70만원)');
+    }
+
+    // 소득 — 월세지원 기준: 중위소득 60% ≈ 월 154만원(1인)
+    // 질문 "월 170만원 이하"로 물어봄. 예이면 154만원 이하 확실, 아니오이면 초과 확실
+    if (income === 'yes') {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '가능';
+      }
+    } else if (income === 'no') {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '불가';
+        rentResult.reasons.push('소득 기준 미충족 (중위소득 60% 이하 필요, 확인일: 2026-08-13)');
+      }
+    } else {
+      if (rentResult.status !== '불가') {
+        rentResult.status = '조건부가능';
+        rentResult.reasons.push('소득 확인 필요 (중위소득 60% 이하 여부)');
+      }
+    }
+
+    // 원가구 소득 안내
+    rentResult.reasons.push('부모 소득은 별도 확인 필요');
+
+    if (rentResult.status === '가능' || rentResult.status === '조건부가능') {
+      rentResult.amount = 480; // 총 480만원
+    }
+
+    results.push(rentResult);
+
+    // === 청년미래적금 ===
+    var futureResult = { name: '청년미래적금', status: '', reasons: [], amount: 0 };
+
+    // 나이
+    if (adjustedAge < 19 || adjustedAge > 34) {
+      futureResult.status = '불가';
+      futureResult.reasons.push('나이 요건 미충족 (만 ' + adjustedAge + '세, 19~34세 필요)');
+    }
+
+    // 소득 — 미래적금 기준: 총급여 7,500만원/년(월 ~625만원)
+    // 질문 "월 170만원 이하"로 물어봄. 예이면 625만원 이하 확실.
+    // 아니오이면 170만원 초과지만 625만원 이하일 수 있으므로 조건부가능
+    if (income === 'yes') {
+      if (futureResult.status !== '불가') {
+        futureResult.status = '가능';
+      }
+    } else if (income === 'no') {
+      if (futureResult.status !== '불가') {
+        futureResult.status = '조건부가능';
+        futureResult.reasons.push('소득 확인 필요 (총급여 7,500만원 이하 여부, 확인일: 2026-08-13)');
+      }
+    } else {
+      if (futureResult.status !== '불가') {
+        futureResult.status = '조건부가능';
+        futureResult.reasons.push('소득 확인 필요 (총급여 7,500만원 이하 여부)');
+      }
+    }
+
+    if (futureResult.status === '가능' || futureResult.status === '조건부가능') {
+      futureResult.amount = 1800; // 총 1,800만원
+    }
+
+    results.push(futureResult);
+
+    return results;
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // 입력값 확인
+    var age = parseInt(document.getElementById('age').value);
+    var military = parseInt(document.getElementById('military').value) || 0;
+    var housing = document.querySelector('input[name="housing"]:checked');
+    var rent = parseInt(document.getElementById('rent').value) || 0;
+    var deposit = parseInt(document.getElementById('deposit').value) || 0;
+    var income = document.querySelector('input[name="income"]:checked');
+
+    // 유효성 검사
+    var valid = true;
+    if (!age || age < 14) {
+      document.getElementById('ageError').style.display = 'block';
+      valid = false;
+    } else {
+      document.getElementById('ageError').style.display = 'none';
+    }
+    if (!housing) {
+      document.getElementById('housingError').style.display = 'block';
+      valid = false;
+    } else {
+      document.getElementById('housingError').style.display = 'none';
+    }
+    if (!income) {
+      alert('소득 항목을 선택해주세요.');
+      valid = false;
+    }
+    if (!valid) return;
+
+    // 판정
+    var results = evaluate(age, military, housing.value, rent, deposit, income.value);
+
+    // 결과 렌더링
+    var totalAmount = 0;
+    var cardsHtml = '';
+    results.forEach(function(r) {
+      var statusClass = r.status === '가능' ? 'possible' : r.status === '불가' ? 'impossible' : 'conditional';
+      var badgeText = r.status === '가능' ? '가능' : r.status === '불가' ? '불가' : '조건부 가능';
+      var statusText = r.status === '가능' ? '지원 대상에 해당합니다' : r.status === '불가' ? '지원 대상이 아닙니다' : '소득 확인 후 확정됩니다';
+
+      var detailHtml = '';
+      r.reasons.forEach(function(reason) {
+        detailHtml += '<li>' + reason + '</li>';
+      });
+
+      var amountHtml = '';
+      if (r.status === '가능' || r.status === '조건부가능') {
+        amountHtml = '<div style="font-size:1.1rem;font-weight:600;color:#2d7a3a;margin-top:8px">최대 ' + r.amount.toLocaleString() + '만원</div>';
+        totalAmount += r.amount;
+      }
+
+      cardsHtml += '<div class="policy-card ' + statusClass + '">';
+      cardsHtml += '<div class="policy-name">' + r.name + ' <span class="badge ' + statusClass + '">' + badgeText + '</span></div>';
+      cardsHtml += '<div class="policy-detail">' + statusText + '</div>';
+      if (detailHtml) {
+        cardsHtml += '<ul class="policy-detail">' + detailHtml + '</ul>';
+      }
+      cardsHtml += amountHtml;
+      cardsHtml += '</div>';
+    });
+
+    document.getElementById('totalAmount').textContent = totalAmount > 0 ? '최대 ' + totalAmount.toLocaleString() + '만원' : '-';
+    document.getElementById('policyCards').innerHTML = cardsHtml;
+
+    var resultDiv = document.getElementById('result');
+    resultDiv.classList.add('show');
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
