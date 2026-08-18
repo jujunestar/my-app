@@ -219,7 +219,9 @@
     rentResult.reasons.push('부모 소득은 별도 확인 필요');
 
     if (rentResult.status === '가능' || rentResult.status === '조건부가능') {
-      rentResult.amount = 480; // 총 480만원
+      var monthlyAmount = Math.min(rent, 20);
+      rentResult.monthlyAmount = monthlyAmount;
+      rentResult.amount = monthlyAmount * 24;
     }
 
     results.push(rentResult);
@@ -310,7 +312,14 @@
 
       var amountHtml = '';
       if (r.status === '가능' || r.status === '조건부가능') {
-        amountHtml = '<div style="font-size:1.1rem;font-weight:600;color:#2d7a3a;margin-top:8px">최대 ' + r.amount.toLocaleString() + '만원</div>';
+        if (r.name.indexOf('월세지원') !== -1 && r.monthlyAmount !== undefined) {
+          amountHtml = '<div style="font-size:1.1rem;font-weight:600;color:#2d7a3a;margin-top:8px">';
+          amountHtml += '월 ' + r.monthlyAmount.toLocaleString() + '만원 × 24개월 = <u>총 ' + r.amount.toLocaleString() + '만원</u>';
+          amountHtml += '<div style="font-size:0.75rem;color:#aaa;font-weight:400">확인일: 2026-08-13</div>';
+          amountHtml += '</div>';
+        } else {
+          amountHtml = '<div style="font-size:1.1rem;font-weight:600;color:#2d7a3a;margin-top:8px">최대 ' + r.amount.toLocaleString() + '만원</div>';
+        }
         totalAmount += r.amount;
       }
 
