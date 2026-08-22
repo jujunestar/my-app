@@ -1,6 +1,7 @@
 import argparse
 import json
 import re
+import time
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
@@ -29,6 +30,19 @@ SYSTEM_PROMPT = (
     "최종 답은 사람이 읽을 한국어 문장으로 정리하고, "
     "판정(가능/불가/조건부가능)과 사유, 근거 정책 항목명과 확인일을 반드시 포함한다."
 )
+
+
+def call_with_retry(func, tries: int = 3, wait: int = 15, label: str = "모델 호출"):
+    last_error = None
+    for attempt in range(tries):
+        try:
+            return func()
+        except Exception as e:
+            last_error = e
+            if attempt < tries - 1:
+                print(f"[{label}] 실패({attempt + 1}/{tries}) — {wait}초 후 재시도합니다.")
+                time.sleep(wait)
+    raise last_error
 
 
 def _digits(value) -> int | None:
@@ -63,7 +77,7 @@ def prepare_inputs(info) -> dict | None:
     }
 
 
-def run_agent(sentence: str, inputs: dict, info_json: str) -> str:
+def run_agent(sentence: str, info_json: str) -> str:
     llm = build_llm()
     llm_with_tools = llm.bind_tools([judge_youth_rent])
     human = (
@@ -77,15 +91,19 @@ def run_agent(sentence: str, inputs: dict, info_json: str) -> str:
         ai = llm_with_tools.invoke(messages)
         messages.append(ai)
         calls = getattr(ai, "tool_calls", None)
-        if not calls:
-            return str(ai.content)
-        for call in calls:
-            result = judge_youth_rent.invoke(call)
-            if isinstance(result, ToolMessage):
-                messages.append(result)
-            else:
-                payload = json.dumps(result, ensure_ascii=False) if isinstance(result, dict) else str(result)
-                messages.append(ToolMessage(content=payload, tool_call_id=call["id"]))
+        if calls:
+            for call in calls:
+                result = judge_youth_rent.invoke(call)
+                if isinstance(result, ToolMessage):
+                    messages.append(result)
+                else:
+                    payload = json.dumps(result, ensure_ascii=False) if isinstance(result, dict) else str(result)
+                    messages.append(ToolMessage(content=payload, tool_call_id=call["id"]))
+            continue
+        text = str(ai.content or "").strip()
+        if text:
+            return text
+        raise RuntimeError("모델이 빈 응답을 반환했습니다.")
     raise RuntimeError("도구 호출 후 최종 답을 얻지 못했습니다.")
 
 
@@ -98,7 +116,10 @@ def phrase_directly(inputs: dict) -> str:
         + json.dumps(result, ensure_ascii=False, indent=2)
     )
     answer = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=human)])
-    return str(answer.content)
+    text = str(answer.content or "").strip()
+    if not text:
+        raise RuntimeError("모델이 빈 응답을 반환했습니다.")
+    return text
 
 
 def main():
@@ -107,7 +128,11 @@ def main():
     parser.add_argument("sentence", help="사용자 문장")
     args = parser.parse_args()
 
-    info = extract_values(args.sentence)
+    try:
+        info = call_with_retry(lambda: extract_values(args.sentence), label="값 추출")
+    except Exception:
+        raise SystemExit("오류: 값 추출이 반복 실패했습니다. 무료 모델 혼잡일 수 있으니 잠시 후 다시 시도해주세요.")
+
     info_json = info.model_dump_json(indent=2)
     print("[추출값]", info_json)
 
@@ -116,10 +141,14 @@ def main():
         raise SystemExit(1)
 
     try:
-        answer = run_agent(args.sentence, inputs, info_json)
+        answer = call_with_retry(lambda: run_agent(args.sentence, info_json), tries=2, wait=10, label="도구 판정")
     except Exception:
-        answer = phrase_directly(inputs)
+        try:
+            answer = call_with_retry(lambda: phrase_directly(inputs), label="답변 생성")
+        except Exception:
+            raise SystemExit("오류: 답변 생성이 반복 실패했습니다. 잠시 후 다시 시도해주세요.")
 
+    print("\n[안내] 현재 판정 대상은 '청년월세지원(국토부)'입니다.")
     print("\n[답변]")
     print(answer)
 

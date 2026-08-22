@@ -39,6 +39,7 @@ def build_llm():
         base_url="https://openrouter.ai/api/v1",
         api_key=api_key,
         max_retries=0,
+        temperature=0,
     )
 
 
