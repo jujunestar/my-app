@@ -19,7 +19,7 @@ def main():
         max_retries=0,
     )
 
-    messages = [HumanMessage(content="청년 월세 지원이 뭔지 두 문장으로 알려줘")]
+    messages = [HumanMessage(content="한국의 여름은 언제까지인가")]
     for attempt in range(5):
         try:
             answer = llm.invoke(messages)
